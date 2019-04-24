@@ -230,3 +230,8 @@ for i = 1:t_steps
     u_sol = np.linalg.solve(A,rhs)
     update_rs(u_sol,n)
 end
+
+# Save data
+for i=1:t_steps
+    np.savetxt('result.dat', [x_grid, r[i,:]])
+end
