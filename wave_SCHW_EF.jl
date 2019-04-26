@@ -1,4 +1,4 @@
-# Solving wave equation on Schwarzschil background in
+# Solving wave equation on Schwarzschild background in
 # the Eddington-Finkelstein coordinates
 
 using PyCall
@@ -6,7 +6,7 @@ using PyCall
 np = pyimport("numpy")
 
 # Parameters
-N = 5
+N = 10
 dx = 1/N
 dt = 0.005
 #cfl = dt/dx
@@ -207,6 +207,7 @@ function update(t_steps)
               u[i] = s[t_steps,i-N]
           end
       end
+    return u
 end
 
 # Update r and s using the solved-for vector u at t_step
@@ -215,7 +216,7 @@ function update_rs(u_sol, t_steps)
         if i<N+1
             r[t_steps, i] = u_sol[i]
         else
-            s[t_steps, i-N+1] = u_sol[i]
+            s[t_steps, i-N+1] = u_sol[i+1]
             # Applying Sommerfeld condition for boundray
             s[t_steps, 1] = r[t_steps,1]
             s[t_steps, N] = -r[t_steps,N]
@@ -228,10 +229,10 @@ for i = 1:t_steps
     u = update(i)
     rhs = B.*u
     u_sol = np.linalg.solve(A,rhs)
-    update_rs(u_sol,n)
+    update_rs(u_sol,i)
 end
 
 # Save data
-for i=1:t_steps
-    np.savetxt('result.dat', [x_grid, r[i,:]])
-end
+#for i=1:t_steps
+#    np.savetxt('result.dat', [x_grid, r[i,:]])
+#end
